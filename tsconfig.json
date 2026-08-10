@@ -3,17 +3,18 @@
     "target": "ES2020",
     "module": "ESNext",
     "lib": ["ES2020"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "strict": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "ignoreDeprecations": "5.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -22,9 +23,8 @@
       "@/config/*": ["src/config/*"],
       "@/types/*": ["src/types/*"]
     },
-    "types": ["node", "express-session", "jest"],
-    "typeRoots": ["./node_modules/@types"]
+    "types": ["node", "express-session", "jest"]
   },
-  "include": ["src/**/*", "node_modules/@types/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }
