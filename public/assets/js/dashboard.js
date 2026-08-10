@@ -190,8 +190,9 @@ const Dashboard = {
   // Handle draft upload submission
   async handleDraftSubmit(e) {
     e.preventDefault();
-
     console.log('📝 Draft form submitted');
+    console.log('   Event:', e);
+    console.log('   preventDefault called');
 
     const { file, caption, privacyLevel, disableDuet, disableComment, disableStitch } = this.uploadState.draft;
 
@@ -355,16 +356,17 @@ const Dashboard = {
   async simulateDraftUpload(file, caption, privacyLevel, disableDuet, disableComment, disableStitch) {
     console.log('📤 Starting draft upload...');
     console.log('   File:', file.name, file.size, 'bytes');
+    console.log('   File type:', file.type);
     console.log('   Caption:', caption);
     console.log('   Privacy:', privacyLevel);
 
     const formData = new FormData();
     formData.append('video', file);
-    formData.append('caption', caption);
+    formData.append('title', caption || 'Video');
     formData.append('privacyLevel', privacyLevel || 'SELF_ONLY');
-    formData.append('disableDuet', disableDuet);
-    formData.append('disableComment', disableComment);
-    formData.append('disableStitch', disableStitch);
+    formData.append('disableDuet', disableDuet ? 'true' : 'false');
+    formData.append('disableComment', disableComment ? 'true' : 'false');
+    formData.append('disableStitch', disableStitch ? 'true' : 'false');
 
     try {
       console.log('🌐 Sending request to /api/v1/video/upload-draft');
@@ -375,11 +377,18 @@ const Dashboard = {
       });
 
       console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', response.headers);
 
       if (!response.ok) {
-        const error = await response.json();
+        const contentType = response.headers.get('content-type');
+        let error;
+        if (contentType?.includes('application/json')) {
+          error = await response.json();
+        } else {
+          error = { error: { message: await response.text() } };
+        }
         console.error('❌ Upload error response:', error);
-        throw new Error(error.error?.message || error.error?.details || 'Upload failed');
+        throw new Error(error.error?.message || error.error?.details || `Upload failed: ${response.status}`);
       }
 
       const result = await response.json();
@@ -393,27 +402,49 @@ const Dashboard = {
 
   // Publish video to TikTok
   async simulatePublish(file, caption, hashtags, privacyLevel, disableDuet, disableComment, disableStitch) {
+    console.log('🚀 Starting publish...');
+    console.log('   File:', file.name, file.size, 'bytes');
+    console.log('   Caption:', caption);
+    console.log('   Hashtags:', hashtags);
+
     const formData = new FormData();
     formData.append('video', file);
-    formData.append('caption', caption);
-    formData.append('hashtags', hashtags);
+    formData.append('title', caption || 'Video');
+    formData.append('hashtags', hashtags || '');
     formData.append('privacyLevel', privacyLevel || 'SELF_ONLY');
-    formData.append('disableDuet', disableDuet);
-    formData.append('disableComment', disableComment);
-    formData.append('disableStitch', disableStitch);
+    formData.append('disableDuet', disableDuet ? 'true' : 'false');
+    formData.append('disableComment', disableComment ? 'true' : 'false');
+    formData.append('disableStitch', disableStitch ? 'true' : 'false');
 
-    const response = await fetch('/api/v1/video/publish', {
-      method: 'POST',
-      body: formData,
-      credentials: 'include',
-    });
+    try {
+      console.log('🌐 Sending request to /api/v1/video/publish');
+      const response = await fetch('/api/v1/video/publish', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || error.error?.details || 'Publishing failed');
+      console.log('📡 Response status:', response.status);
+
+      if (!response.ok) {
+        const contentType = response.headers.get('content-type');
+        let error;
+        if (contentType?.includes('application/json')) {
+          error = await response.json();
+        } else {
+          error = { error: { message: await response.text() } };
+        }
+        console.error('❌ Publish error response:', error);
+        throw new Error(error.error?.message || error.error?.details || `Publishing failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Publish successful:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ Publish failed:', error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Show status message
@@ -504,9 +535,31 @@ const Dashboard = {
   },
 };
 
+// Global error handler
+window.addEventListener('error', (e) => {
+  console.error('🔴 Global JavaScript Error:', e.error);
+  console.error('   Message:', e.message);
+  console.error('   File:', e.filename);
+  console.error('   Line:', e.lineno);
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('🔴 Unhandled Promise Rejection:', e.reason);
+});
+
 // Initialize dashboard when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => Dashboard.init());
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      Dashboard.init();
+    } catch (error) {
+      console.error('🔴 Error during Dashboard.init():', error);
+    }
+  });
 } else {
-  Dashboard.init();
+  try {
+    Dashboard.init();
+  } catch (error) {
+    console.error('🔴 Error during Dashboard.init():', error);
+  }
 }

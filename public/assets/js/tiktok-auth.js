@@ -137,13 +137,27 @@ const TikTokAuth = {
     console.log('👤 Updating UI with user info:', userInfo);
 
     // Update username displays with @ prefix
-    const usernameElements = document.querySelectorAll('#user-name, #tiktok-username');
-    usernameElements.forEach(el => {
-      const displayName = userInfo.displayName || 'user';
+    const usernameEl = document.getElementById('tiktok-username');
+    if (usernameEl) {
+      const displayName = userInfo.displayName || userInfo.display_name || 'user';
       const formattedName = displayName.startsWith('@') ? displayName : '@' + displayName;
-      console.log(`   Setting ${el.id} to: ${formattedName}`);
-      el.textContent = formattedName;
-    });
+      console.log(`   Setting tiktok-username to: ${formattedName}`);
+      usernameEl.textContent = formattedName;
+    }
+
+    // Update user ID if available
+    const userIdEl = document.getElementById('user-id');
+    if (userIdEl && (userInfo.openId || userInfo.open_id)) {
+      userIdEl.textContent = `ID: ${userInfo.openId || userInfo.open_id}`;
+    }
+
+    // Update user name in header
+    const userNameEl = document.getElementById('user-name');
+    if (userNameEl) {
+      const displayName = userInfo.displayName || userInfo.display_name || 'User';
+      console.log(`   Setting user-name to: ${displayName}`);
+      userNameEl.textContent = displayName;
+    }
 
     // Show logout button
     const logoutBtn = document.getElementById('logout-btn');
