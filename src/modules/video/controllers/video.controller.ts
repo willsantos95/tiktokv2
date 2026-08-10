@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
-import { videoService } from '@/modules/video/services/video.service.js';
-import { oauthService } from '@/modules/auth/services/oauth.service.js';
-import { logger } from '@/shared/utils/logger.js';
-import { AppError } from '@/shared/middleware/error-handler.js';
-import { ErrorCode } from '@/shared/constants/error-codes.js';
-import { VideoMetadata, ApiResponse } from '@/types/index.js';
-import '@/types/express-session.js';
+import { videoService } from '../../../modules/video/services/video.service.js';
+import { oauthService } from '../../../modules/auth/services/oauth.service.js';
+import { logger } from '../../../shared/utils/logger.js';
+import { AppError } from '../../../shared/middleware/error-handler.js';
+import { ErrorCode } from '../../../shared/constants/error-codes.js';
+import { VideoMetadata, ApiResponse } from '../../../types/index.js';
+import '../../../types/express-session.js';
 
 export class VideoController {
   async uploadDraft(req: Request, res: Response<ApiResponse>, next: NextFunction) {

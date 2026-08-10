@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import { logger } from '@/shared/utils/logger.js';
-import { OAUTH_STATE_TTL } from '@/shared/constants/error-codes.js';
-import { OAuthState } from '@/types/index.js';
+import { logger } from '../../../shared/utils/logger.js';
+import { OAUTH_STATE_TTL } from '../../../shared/constants/error-codes.js';
+import { OAuthState } from '../../../types/index.js';
 
 export class StateService {
   private states = new Map<string, OAuthState>();

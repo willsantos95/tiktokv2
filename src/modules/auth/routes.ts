@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { oauthController } from '@/modules/auth/controllers/oauth.controller.js';
-import { authMiddleware } from '@/shared/middleware/auth.middleware.js';
+import { oauthController } from '../../modules/auth/controllers/oauth.controller.js';
+import { authMiddleware } from '../../shared/middleware/auth.middleware.js';
 
 export const authRoutes = Router();
 

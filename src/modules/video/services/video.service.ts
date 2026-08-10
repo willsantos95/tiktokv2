@@ -1,10 +1,10 @@
 import axios from 'axios';
 import fs from 'fs';
-import { config } from '@/config/index.js';
-import { logger } from '@/shared/utils/logger.js';
-import { AppError } from '@/shared/middleware/error-handler.js';
-import { ErrorCode, VALID_VIDEO_FORMATS, MAX_VIDEO_SIZE, MAX_CAPTION_LENGTH } from '@/shared/constants/error-codes.js';
-import { VideoMetadata, TikTokVideoInit, TikTokVideoFinish, SessionUser } from '@/types/index.js';
+import { config } from '../../../config/index.js';
+import { logger } from '../../../shared/utils/logger.js';
+import { AppError } from '../../../shared/middleware/error-handler.js';
+import { ErrorCode, VALID_VIDEO_FORMATS, MAX_VIDEO_SIZE, MAX_CAPTION_LENGTH } from '../../../shared/constants/error-codes.js';
+import { VideoMetadata, TikTokVideoInit, TikTokVideoFinish, SessionUser } from '../../../types/index.js';
 
 export class VideoService {
   validateVideoFile(file: Express.Multer.File): void {

@@ -15,14 +15,6 @@
     "declarationMap": true,
     "sourceMap": true,
     "ignoreDeprecations": "5.0",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "@/modules/*": ["src/modules/*"],
-      "@/shared/*": ["src/shared/*"],
-      "@/config/*": ["src/config/*"],
-      "@/types/*": ["src/types/*"]
-    },
     "types": ["node", "express-session", "jest"]
   },
   "include": ["src/**/*"],

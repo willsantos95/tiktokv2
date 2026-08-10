@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { oauthService } from '@/modules/auth/services/oauth.service.js';
-import { stateService } from '@/modules/auth/services/state.service.js';
-import { AppError } from '@/shared/middleware/error-handler.js';
-import { ErrorCode } from '@/shared/constants/error-codes.js';
-import { logger } from '@/shared/utils/logger.js';
-import { ApiResponse } from '@/types/index.js';
-import '@/types/express-session.js';
+import { oauthService } from '../../../modules/auth/services/oauth.service.js';
+import { stateService } from '../../../modules/auth/services/state.service.js';
+import { AppError } from '../../../shared/middleware/error-handler.js';
+import { ErrorCode } from '../../../shared/constants/error-codes.js';
+import { logger } from '../../../shared/utils/logger.js';
+import { ApiResponse } from '../../../types/index.js';
+import '../../../types/express-session.js';
 
 export class OAuthController {
   async getAuthUrl(req: Request, res: Response<ApiResponse>, next: NextFunction) {

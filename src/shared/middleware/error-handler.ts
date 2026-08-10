@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '@/shared/utils/logger.js';
-import { ErrorCode, ERROR_MESSAGES } from '@/shared/constants/error-codes.js';
-import { ApiResponse } from '@/types/index.js';
+import { logger } from '../../shared/utils/logger.js';
+import { ErrorCode, ERROR_MESSAGES } from '../../shared/constants/error-codes.js';
+import { ApiResponse } from '../../types/index.js';
 
 export class AppError extends Error {
   constructor(

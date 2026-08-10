@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { TikTokConfig } from '@/types/index.js';
+import { TikTokConfig } from '../types/index.js';
 
 dotenv.config();
 

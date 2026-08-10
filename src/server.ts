@@ -3,12 +3,12 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import helmet from 'helmet';
-import { config, validateConfig } from '@/config/index.js';
-import { logger } from '@/shared/utils/logger.js';
-import { errorHandler } from '@/shared/middleware/error-handler.js';
-import { authRoutes } from '@/modules/auth/routes.js';
-import { videoRoutes } from '@/modules/video/routes.js';
-import { ApiResponse } from '@/types/index.js';
+import { config, validateConfig } from './config/index.js';
+import { logger } from './shared/utils/logger.js';
+import { errorHandler } from './shared/middleware/error-handler.js';
+import { authRoutes } from './modules/auth/routes.js';
+import { videoRoutes } from './modules/video/routes.js';
+import { ApiResponse } from './types/index.js';
 
 // Validate configuration
 validateConfig();

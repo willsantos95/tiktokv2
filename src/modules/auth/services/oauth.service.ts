@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { config } from '@/config/index.js';
-import { logger } from '@/shared/utils/logger.js';
-import { AppError } from '@/shared/middleware/error-handler.js';
-import { ErrorCode } from '@/shared/constants/error-codes.js';
-import { TikTokOAuthResponse, TikTokUserInfo, SessionUser } from '@/types/index.js';
-import { TOKEN_REFRESH_BUFFER } from '@/shared/constants/error-codes.js';
+import { config } from '../../../config/index.js';
+import { logger } from '../../../shared/utils/logger.js';
+import { AppError } from '../../../shared/middleware/error-handler.js';
+import { ErrorCode } from '../../../shared/constants/error-codes.js';
+import { TikTokOAuthResponse, TikTokUserInfo, SessionUser } from '../../../types/index.js';
+import { TOKEN_REFRESH_BUFFER } from '../../../shared/constants/error-codes.js';
 
 export class OAuthService {
   generateAuthorizationUrl(state: string): string {
