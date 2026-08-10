@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      APP_URL: http://localhost:3000
+      CORS_ORIGIN: "*"
+      TIKTOK_CLIENT_KEY: ${TIKTOK_CLIENT_KEY}
+      TIKTOK_CLIENT_SECRET: ${TIKTOK_CLIENT_SECRET}
+      TIKTOK_REDIRECT_URI: ${TIKTOK_REDIRECT_URI}
+      TIKTOK_SANDBOX: ${TIKTOK_SANDBOX:-true}
+      SESSION_SECRET: ${SESSION_SECRET:-dev-secret}
+      LOG_LEVEL: info
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    networks:
+      - tiktok-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - tiktok-network
+    restart: unless-stopped
+
+  # Optional: PostgreSQL for future database support
+  # postgres:
+  #   image: postgres:14-alpine
+  #   environment:
+  #     POSTGRES_DB: tiktok_db
+  #     POSTGRES_USER: ${DB_USER:-postgres}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   networks:
+  #     - tiktok-network
+  #   restart: unless-stopped
+
+volumes:
+  redis-data:
+  # postgres-data:
+
+networks:
+  tiktok-network:
+    driver: bridge
