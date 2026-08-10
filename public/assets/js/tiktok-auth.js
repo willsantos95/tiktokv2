@@ -88,7 +88,7 @@ const TikTokAuth = {
 
     try {
       // Check with backend
-      const response = await fetch(`${API_BASE_URL}/api/tiktok/user`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/user`, {
         credentials: 'include',
       });
 
@@ -172,7 +172,7 @@ const TikTokAuth = {
       }
 
       // Get authorization URL from backend
-      const response = await fetch(`${API_BASE_URL}/api/tiktok/auth-url`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/url`);
       const data = await response.json();
 
       if (data.authUrl) {
@@ -208,7 +208,7 @@ const TikTokAuth = {
     try {
       // This would call your backend endpoint that exchanges the code for a token
       // Your backend should call TikTok's token endpoint with CLIENT_SECRET
-      const response = await fetch('/api/tiktok/callback', {
+      const response = await fetch('/api/v1/auth/callback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
@@ -234,7 +234,7 @@ const TikTokAuth = {
   async logout() {
     if (confirm('Are you sure you want to logout?')) {
       try {
-        await fetch(`${API_BASE_URL}/api/tiktok/logout`, {
+        await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
           method: 'POST',
           credentials: 'include',
         });
@@ -266,7 +266,7 @@ const TikTokAuth = {
     if (Date.now() > expiryTime - 5 * 60 * 1000) {
       try {
         // Call your backend to refresh the token
-        const response = await fetch('/api/tiktok/refresh', {
+        const response = await fetch('/api/v1/auth/refresh', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
         });

@@ -367,8 +367,8 @@ const Dashboard = {
     formData.append('disableStitch', disableStitch);
 
     try {
-      console.log('🌐 Sending request to /api/tiktok/upload-draft');
-      const response = await fetch('/api/tiktok/upload-draft', {
+      console.log('🌐 Sending request to /api/v1/video/upload-draft');
+      const response = await fetch('/api/v1/video/upload-draft', {
         method: 'POST',
         body: formData,
         credentials: 'include',
@@ -402,7 +402,7 @@ const Dashboard = {
     formData.append('disableComment', disableComment);
     formData.append('disableStitch', disableStitch);
 
-    const response = await fetch('/api/tiktok/publish', {
+    const response = await fetch('/api/v1/video/publish', {
       method: 'POST',
       body: formData,
       credentials: 'include',
