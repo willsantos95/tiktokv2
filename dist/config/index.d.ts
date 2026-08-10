@@ -1,27 +1,27 @@
 import { TikTokConfig } from '../types/index.js';
 export declare const config: {
-    env: string;
+    env: any;
     port: number;
-    appUrl: string;
-    corsOrigin: string | undefined;
+    appUrl: any;
+    corsOrigin: any;
     tiktok: TikTokConfig;
     database: {
-        url: string;
+        url: any;
     };
     redis: {
-        url: string;
+        url: any;
     };
     session: {
-        secret: string;
+        secret: any;
         maxAge: number;
     };
     logging: {
-        level: string;
+        level: any;
     };
     upload: {
         maxSize: number;
-        tempDir: string;
-        publicDir: string;
+        tempDir: any;
+        publicDir: any;
     };
     api: {
         version: string;

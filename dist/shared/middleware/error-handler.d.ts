@@ -7,5 +7,5 @@ export declare class AppError extends Error {
     details?: unknown | undefined;
     constructor(code: ErrorCode, statusCode: number, details?: unknown | undefined);
 }
-export declare const errorHandler: (err: Error | AppError, req: Request, res: Response<ApiResponse>, next: NextFunction) => Response<ApiResponse<unknown>, Record<string, any>> | undefined;
+export declare const errorHandler: (err: Error | AppError, req: Request, res: Response<ApiResponse>, next: NextFunction) => any;
 //# sourceMappingURL=error-handler.d.ts.map
