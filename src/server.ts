@@ -48,10 +48,33 @@ app.use(
   }),
 );
 
+// Serve static files (HTML, CSS, JS)
+app.use(express.static('public'));
+
 // Request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
   logger.http(`${req.method} ${req.path}`);
   next();
+});
+
+// Root endpoint
+app.get('/', (req: Request, res: Response<ApiResponse>) => {
+  res.json({
+    success: true,
+    message: 'TikTok Login & Upload Server',
+    data: {
+      version: config.api.version,
+      status: 'running',
+      environment: config.env,
+      mode: config.tiktok.sandbox ? 'SANDBOX' : 'PRODUCTION',
+      endpoints: {
+        auth: `/api/${config.api.version}/auth`,
+        video: `/api/${config.api.version}/video`,
+        health: '/health',
+      },
+    },
+    timestamp: new Date(),
+  });
 });
 
 // Health check endpoint
