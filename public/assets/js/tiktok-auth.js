@@ -85,14 +85,24 @@ const TikTokAuth = {
     const isOnLogin = currentPage === 'login.html';
 
     console.log('🔍 Checking auth status on page:', currentPage);
+    console.log('📍 Full URL:', window.location.href);
 
     try {
       // Check with backend
+      console.log('🌐 Fetching /api/v1/auth/user with credentials...');
       const response = await fetch(`${API_BASE_URL}/api/v1/auth/user`, {
         credentials: 'include',
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
       console.log('📡 Auth check response status:', response.status);
+      console.log('📡 Response headers:', {
+        'content-type': response.headers.get('content-type'),
+        'set-cookie': response.headers.get('set-cookie'),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -102,30 +112,35 @@ const TikTokAuth = {
 
         // If on login page, redirect to dashboard
         if (isOnLogin) {
+          console.log('📍 Redirecting to dashboard...');
           setTimeout(() => {
             window.location.href = './dashboard.html';
           }, 500);
         }
       } else {
         // User is not authenticated
-        console.log('❌ User not authenticated');
+        console.log('❌ User not authenticated - status:', response.status);
+        const errorData = await response.json().catch(() => ({}));
+        console.log('   Error details:', errorData);
         this.updateUIForUnauthenticated();
 
         // If on dashboard, redirect to login
         if (isOnDashboard) {
+          console.log('⚠️ On dashboard but not authenticated - redirecting to login');
           setTimeout(() => {
             window.location.href = './login.html';
-          }, 500);
+          }, 1000);
         }
       }
     } catch (error) {
       console.error('❌ Auth check error:', error);
+      console.error('   Stack:', error.stack);
       this.updateUIForUnauthenticated();
 
       if (isOnDashboard) {
         setTimeout(() => {
           window.location.href = './login.html';
-        }, 500);
+        }, 1000);
       }
     }
   },

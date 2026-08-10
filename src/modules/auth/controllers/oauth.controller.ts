@@ -84,14 +84,28 @@ export class OAuthController {
 
       logger.info('🎉 OAuth flow completed successfully', {
         displayName: userData.display_name,
+        userId: userData.open_id,
+      });
+
+      logger.info('💾 Saving session...', {
+        hasUser: !!req.session.user,
+        sessionId: req.sessionID,
       });
 
       // Save session and redirect
       req.session.save((err) => {
         if (err) {
-          logger.error('Session save error', { error: err.message });
+          logger.error('❌ Session save error', {
+            error: err.message,
+            stack: err.stack,
+          });
           return res.redirect('/login.html?error=session_save_failed');
         }
+
+        logger.info('✅ Session saved successfully', {
+          sessionId: req.sessionID,
+          hasCookie: !!res.getHeader('set-cookie'),
+        });
 
         res.redirect('/dashboard.html');
       });
@@ -102,12 +116,27 @@ export class OAuthController {
 
   async getUser(req: Request, res: Response<ApiResponse>, next: NextFunction) {
     try {
+      logger.info('🔍 Auth check request', {
+        sessionId: req.sessionID,
+        hasCookie: !!req.get('cookie'),
+        hasSession: !!req.session,
+        hasUser: !!req.session?.user,
+      });
+
       if (!req.session?.user) {
+        logger.warn('❌ No user in session', {
+          sessionId: req.sessionID,
+          sessionKeys: req.session ? Object.keys(req.session) : [],
+        });
         throw new AppError(
           ErrorCode.UNAUTHORIZED,
           401,
         );
       }
+
+      logger.info('✅ User found in session', {
+        displayName: req.session.user.displayName,
+      });
 
       // Check if token needs refresh
       if (oauthService.isTokenExpired(req.session.user.expiresAt)) {

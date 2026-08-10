@@ -1,0 +1,11 @@
+import { Request, Response, NextFunction } from 'express';
+import { ErrorCode } from '../../shared/constants/error-codes.js';
+import { ApiResponse } from '../../types/index.js';
+export declare class AppError extends Error {
+    code: ErrorCode;
+    statusCode: number;
+    details?: unknown | undefined;
+    constructor(code: ErrorCode, statusCode: number, details?: unknown | undefined);
+}
+export declare const errorHandler: (err: Error | AppError, req: Request, res: Response<ApiResponse>, next: NextFunction) => Response<ApiResponse<unknown>, Record<string, any>> | undefined;
+//# sourceMappingURL=error-handler.d.ts.map

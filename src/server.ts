@@ -26,7 +26,14 @@ app.use(helmet());
 // CORS configuration
 app.use(
   cors({
-    origin: config.corsOrigin,
+    origin: (origin, callback) => {
+      const allowedOrigins = (config.corsOrigin || '').split(',').map(o => o.trim()).filter(o => o);
+      if (!origin || allowedOrigins.includes('*') || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -41,9 +48,11 @@ app.use(cookieParser());
 // Session configuration
 app.use(
   session({
+    name: 'sessionId',
     secret: config.session.secret,
     resave: false,
     saveUninitialized: true,
+    proxy: config.env === 'production',
     cookie: {
       secure: config.env === 'production',
       httpOnly: true,
@@ -52,6 +61,13 @@ app.use(
     },
   }),
 );
+
+logger.info('📋 Session middleware configured', {
+  env: config.env,
+  secure: config.env === 'production',
+  sameSite: 'lax',
+  saveUninitialized: true,
+});
 
 // Serve static files (HTML, CSS, JS)
 const publicDir = path.join(__dirname, '..', 'public');
