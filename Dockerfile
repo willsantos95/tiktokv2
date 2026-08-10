@@ -36,6 +36,9 @@ RUN npm install --omit=dev
 # Copy built application from builder
 COPY --from=builder /build/dist ./dist
 
+# Copy public static files (HTML, CSS, JS)
+COPY public ./public
+
 # Create necessary directories
 RUN mkdir -p uploads/temp uploads/public logs
 
