@@ -379,7 +379,7 @@ const Dashboard = {
       if (!response.ok) {
         const error = await response.json();
         console.error('❌ Upload error response:', error);
-        throw new Error(error.details || error.error || 'Upload failed');
+        throw new Error(error.error?.message || error.error?.details || 'Upload failed');
       }
 
       const result = await response.json();
@@ -410,7 +410,7 @@ const Dashboard = {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.details || error.error || 'Publishing failed');
+      throw new Error(error.error?.message || error.error?.details || 'Publishing failed');
     }
 
     return response.json();

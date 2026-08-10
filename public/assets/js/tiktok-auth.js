@@ -96,9 +96,9 @@ const TikTokAuth = {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ User authenticated:', data.user);
+        console.log('✅ User authenticated:', data.data?.user);
         // User is authenticated
-        this.updateUIForAuthenticated(data.user);
+        this.updateUIForAuthenticated(data.data?.user);
 
         // If on login page, redirect to dashboard
         if (isOnLogin) {
@@ -175,9 +175,9 @@ const TikTokAuth = {
       const response = await fetch(`${API_BASE_URL}/api/v1/auth/url`);
       const data = await response.json();
 
-      if (data.authUrl) {
+      if (data.data?.authUrl) {
         // Redirect to TikTok OAuth
-        window.location.href = data.authUrl;
+        window.location.href = data.data.authUrl;
       } else {
         throw new Error('Failed to get authorization URL');
       }
