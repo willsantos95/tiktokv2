@@ -3,12 +3,17 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import helmet from 'helmet';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config, validateConfig } from './config/index.js';
 import { logger } from './shared/utils/logger.js';
 import { errorHandler } from './shared/middleware/error-handler.js';
 import { authRoutes } from './modules/auth/routes.js';
 import { videoRoutes } from './modules/video/routes.js';
 import { ApiResponse } from './types/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Validate configuration
 validateConfig();
@@ -49,7 +54,9 @@ app.use(
 );
 
 // Serve static files (HTML, CSS, JS)
-app.use(express.static('public'));
+const publicDir = path.join(__dirname, '..', 'public');
+app.use(express.static(publicDir));
+logger.info(`📁 Serving static files from: ${publicDir}`);
 
 // Request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
