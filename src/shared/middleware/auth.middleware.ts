@@ -8,6 +8,11 @@ declare global {
     interface Request {
       user?: SessionUser;
     }
+    namespace Session {
+      interface SessionData {
+        user?: SessionUser;
+      }
+    }
   }
 }
 
@@ -16,7 +21,7 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.session?.user) {
+  if (!req.session || !req.session.user) {
     throw new AppError(
       ErrorCode.UNAUTHORIZED,
       401,
@@ -32,7 +37,7 @@ export const optionalAuthMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.session?.user) {
+  if (req.session && req.session.user) {
     req.user = req.session.user;
   }
   next();
