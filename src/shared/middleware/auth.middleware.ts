@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../../shared/middleware/error-handler.js';
 import { ErrorCode } from '../../shared/constants/error-codes.js';
 import { SessionUser } from '../../types/index.js';
-import '../../types/express-session.js';
 
 declare global {
   namespace Express {

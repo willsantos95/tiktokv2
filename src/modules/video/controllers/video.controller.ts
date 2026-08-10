@@ -6,7 +6,6 @@ import { logger } from '../../../shared/utils/logger.js';
 import { AppError } from '../../../shared/middleware/error-handler.js';
 import { ErrorCode } from '../../../shared/constants/error-codes.js';
 import { VideoMetadata, ApiResponse } from '../../../types/index.js';
-import '../../../types/express-session.js';
 
 export class VideoController {
   async uploadDraft(req: Request, res: Response<ApiResponse>, next: NextFunction) {
