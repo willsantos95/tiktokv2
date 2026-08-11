@@ -109,33 +109,16 @@ export class OAuthService {
         return new Date().getTime() > new Date(expiresAt).getTime() - TOKEN_REFRESH_BUFFER;
     }
     createSessionUser(tokenData, userData) {
-        logger.info('📦 Creating session user from TikTok data', {
-            receivedUserData: {
-                open_id: userData?.open_id,
-                union_id: userData?.union_id,
-                display_name: userData?.display_name,
-                avatar_url: userData?.avatar_url,
-            },
-        });
-        const displayName = userData?.display_name || userData?.open_id || 'User';
-        const avatarUrl = userData?.avatar_url || '';
-        const unionId = userData?.union_id || tokenData.open_id;
-        const sessionUser = {
+        return {
             openId: tokenData.open_id,
-            unionId: unionId,
-            displayName: displayName,
-            avatarUrl: avatarUrl,
+            unionId: userData.union_id,
+            displayName: userData.display_name,
+            avatarUrl: userData.avatar_url,
             accessToken: tokenData.access_token,
             refreshToken: tokenData.refresh_token,
             expiresAt: new Date(Date.now() + tokenData.expires_in * 1000),
             tokenScope: tokenData.scope || 'user.info.basic,video.upload,video.publish',
         };
-        logger.info('✅ Session user created', {
-            openId: sessionUser.openId,
-            displayName: sessionUser.displayName,
-            hasAvatarUrl: !!sessionUser.avatarUrl,
-        });
-        return sessionUser;
     }
 }
 export const oauthService = new OAuthService();
