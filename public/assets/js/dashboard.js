@@ -14,6 +14,7 @@ const Dashboard = {
     publish: {
       file: null,
       caption: '',
+      hashtags: '',
       privacyLevel: 'SELF_ONLY',
       disableDuet: false,
       disableComment: false,
@@ -100,7 +101,7 @@ const Dashboard = {
         this.uploadState.publish.caption = e.target.value;
       });
 
-      document.getElementById('hashtags').addEventListener('input', (e) => {
+      document.getElementById('hashtags-publish').addEventListener('input', (e) => {
         this.uploadState.publish.hashtags = e.target.value;
       });
 
@@ -329,6 +330,7 @@ const Dashboard = {
       this.uploadState.publish = {
         file: null,
         caption: '',
+        hashtags: '',
         privacyLevel: 'SELF_ONLY',
         disableDuet: false,
         disableComment: false,
