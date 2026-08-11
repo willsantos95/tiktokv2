@@ -13,8 +13,13 @@ export class VideoController {
 
     try {
       if (!req.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, 401);
+        logger.error('❌ Unauthorized upload attempt - no user in session');
+        throw new AppError(ErrorCode.UNAUTHORIZED, 401, { message: 'User session not found' });
       }
+
+      logger.info('📤 Upload Draft Request Received', {
+        userId: req.user.openId.substring(0, 8) + '...',
+      });
 
       const { title, privacyLevel, disableDuet, disableComment, disableStitch } = req.body;
       const videoFile = req.file;
@@ -38,6 +43,7 @@ export class VideoController {
       logger.info('📤 Upload Draft Started', {
         title: metadata.title.substring(0, 50),
         privacy: metadata.privacyLevel,
+        fileSize: `${(videoFile!.size / 1024 / 1024).toFixed(2)}MB`,
       });
 
       // Check token expiration and refresh if needed
@@ -54,7 +60,13 @@ export class VideoController {
 
         if (req.session) {
           req.session.user = req.user;
-          req.session.save();
+          await new Promise((resolve, reject) => {
+            req.session!.save((err: any) => {
+              if (err) reject(err);
+              else resolve(null);
+            });
+          });
+          logger.info('✅ Session updated with refreshed token');
         }
       }
 
@@ -62,9 +74,20 @@ export class VideoController {
       const fileSize = fs.statSync(tempFilePath).size;
       const uploadToken = await videoService.initializeUpload(req.user, fileSize);
 
-      // Upload video
-      const videoBuffer = fs.readFileSync(tempFilePath);
-      await videoService.uploadVideoChunk(req.user, uploadToken, videoBuffer);
+      // Upload video - use chunked upload for files > 10MB, simple upload otherwise
+      const CHUNK_THRESHOLD = 10 * 1024 * 1024; // 10MB
+      if (fileSize > CHUNK_THRESHOLD) {
+        logger.info('📤 Using chunked upload for large file', {
+          fileSize: `${(fileSize / 1024 / 1024).toFixed(2)}MB`,
+        });
+        await videoService.uploadVideoFile(req.user, uploadToken, tempFilePath);
+      } else {
+        logger.info('📤 Using simple upload for small file', {
+          fileSize: `${(fileSize / 1024 / 1024).toFixed(2)}MB`,
+        });
+        const videoBuffer = fs.readFileSync(tempFilePath);
+        await videoService.uploadVideoChunk(req.user, uploadToken, videoBuffer, 1, fileSize);
+      }
 
       // Finalize upload as draft
       const videoId = await videoService.finalizeUpload(
@@ -74,17 +97,22 @@ export class VideoController {
         'DRAFT',
       );
 
-      logger.info('✅ Draft upload completed successfully', { videoId });
+      logger.info('✅ Draft upload completed successfully', {
+        videoId,
+        title: metadata.title.substring(0, 30),
+        privacy: metadata.privacyLevel,
+      });
 
       res.json({
         success: true,
-        message: 'Video uploaded as draft',
+        message: 'Video uploaded as draft successfully',
         data: { videoId },
         timestamp: new Date(),
       });
     } catch (error) {
       logger.error('❌ Draft upload failed', {
         error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
       });
 
       if (tempFilePath) {
@@ -100,8 +128,13 @@ export class VideoController {
 
     try {
       if (!req.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, 401);
+        logger.error('❌ Unauthorized publish attempt - no user in session');
+        throw new AppError(ErrorCode.UNAUTHORIZED, 401, { message: 'User session not found' });
       }
+
+      logger.info('🚀 Publish Video Request Received', {
+        userId: req.user.openId.substring(0, 8) + '...',
+      });
 
       const { title, hashtags, privacyLevel, disableDuet, disableComment, disableStitch } = req.body;
       const videoFile = req.file;
@@ -112,9 +145,9 @@ export class VideoController {
       tempFilePath = videoFile!.path;
 
       // Validate metadata
-      const description = (title || '') + (hashtags ? ' ' + hashtags : '');
+      const description = (title || '').trim() + (hashtags ? ' ' + hashtags.trim() : '');
       const metadata: VideoMetadata = {
-        title: description,
+        title: description.trim() || 'Video',
         privacyLevel: privacyLevel || 'SELF_ONLY',
         disableDuet: disableDuet === 'true' || disableDuet === true,
         disableComment: disableComment === 'true' || disableComment === true,
@@ -126,6 +159,7 @@ export class VideoController {
       logger.info('🚀 Publish Started', {
         title: metadata.title.substring(0, 50),
         privacy: metadata.privacyLevel,
+        fileSize: `${(videoFile!.size / 1024 / 1024).toFixed(2)}MB`,
       });
 
       // Check token expiration and refresh if needed
@@ -142,7 +176,13 @@ export class VideoController {
 
         if (req.session) {
           req.session.user = req.user;
-          req.session.save();
+          await new Promise((resolve, reject) => {
+            req.session!.save((err: any) => {
+              if (err) reject(err);
+              else resolve(null);
+            });
+          });
+          logger.info('✅ Session updated with refreshed token');
         }
       }
 
@@ -150,9 +190,20 @@ export class VideoController {
       const fileSize = fs.statSync(tempFilePath).size;
       const uploadToken = await videoService.initializeUpload(req.user, fileSize);
 
-      // Upload video
-      const videoBuffer = fs.readFileSync(tempFilePath);
-      await videoService.uploadVideoChunk(req.user, uploadToken, videoBuffer);
+      // Upload video - use chunked upload for files > 10MB, simple upload otherwise
+      const CHUNK_THRESHOLD = 10 * 1024 * 1024; // 10MB
+      if (fileSize > CHUNK_THRESHOLD) {
+        logger.info('📤 Using chunked upload for large file', {
+          fileSize: `${(fileSize / 1024 / 1024).toFixed(2)}MB`,
+        });
+        await videoService.uploadVideoFile(req.user, uploadToken, tempFilePath);
+      } else {
+        logger.info('📤 Using simple upload for small file', {
+          fileSize: `${(fileSize / 1024 / 1024).toFixed(2)}MB`,
+        });
+        const videoBuffer = fs.readFileSync(tempFilePath);
+        await videoService.uploadVideoChunk(req.user, uploadToken, videoBuffer, 1, fileSize);
+      }
 
       // Finalize and publish
       const videoId = await videoService.finalizeUpload(
@@ -162,7 +213,11 @@ export class VideoController {
         'PUBLISH_IMMEDIATELY',
       );
 
-      logger.info('✅ Video published successfully', { videoId });
+      logger.info('✅ Video published successfully', {
+        videoId,
+        title: metadata.title.substring(0, 30),
+        privacy: metadata.privacyLevel,
+      });
 
       res.json({
         success: true,
@@ -173,6 +228,7 @@ export class VideoController {
     } catch (error) {
       logger.error('❌ Publish failed', {
         error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
       });
 
       if (tempFilePath) {
